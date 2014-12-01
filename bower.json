@@ -1,0 +1,14 @@
+{
+  "name": "th-google-regions",
+  "version": "0.0.0",
+  "keywords": [
+    "seed",
+    "polymer",
+    "web-components"
+  ],
+  "main": "th-google-regions.html",
+  "dependencies": {
+    "polymer": "Polymer/polymer#~0.3.5",
+    "google-chart": "GoogleWebComponents/google-chart#master"
+  }
+}

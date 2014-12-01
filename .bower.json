@@ -1,0 +1,23 @@
+{
+  "name": "th-google-regions",
+  "keywords": [
+    "seed",
+    "polymer",
+    "web-components"
+  ],
+  "main": "th-google-regions.html",
+  "dependencies": {
+    "polymer": "Polymer/polymer#~0.3.5",
+    "google-chart": "GoogleWebComponents/google-chart#master"
+  },
+  "homepage": "https://github.com/thelmanews/th-google-scatter-bubble",
+  "_release": "ecd95fcd51",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "ecd95fcd51ff1ac4026f47f5648351b1c8990e92"
+  },
+  "_source": "https://github.com/thelmanews/th-google-scatter-bubble.git",
+  "_target": "*",
+  "_originalSource": "https://github.com/thelmanews/th-google-scatter-bubble.git"
+}
