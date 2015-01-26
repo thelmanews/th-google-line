@@ -24,26 +24,8 @@ Element providing a Thelma wrapper for the Google Line Chart.
     <th-data-utility id="utility"></th-data-utility>
 
     <th-u-data-selector id="data_selector" input="{{chartData}}" selections="{{labelValueSelection}}"></th-u-data-selector>
-    <!--
-    <template if="{{dataAttributes}}">
-      <div class="columnNames">
-        <div>
-           Label:  
-          <template repeat="{{attr in dataAttributes}}">
-            <span class="columnName datalabel {{attr | checkIflabelValueSelection[0]}}" on-click="{{togglelabelValueSelection[0]}}">{{attr}}</span>
-          </template>
-        </div>
-        <br>
-        <div>
-          Value: 
-          <template repeat="{{attr in dataAttributes}}">
-            <span class="columnName {{attr | checkIfSelectedValue}}" on-click="{{togglelabelValueSelection[1]}}">{{attr}}</span>
-          </template>
-        </div>
-      </div>
-    </template>
-  -->
-    <google-chart id="googleChart" on-google-chart-render="{{chartReady}}" style="width:100%; height: 85%;"
+ 
+    <google-chart id="googleChart" style="width:100%; height: 85%;"
           type='line'
           options= "{{options}}"
           data="{{_data}}">
@@ -117,50 +99,25 @@ Element providing a Thelma wrapper for the Google Line Chart.
         console.log('init');
         this.reformatData();
         this.$.data_selector.addEventListener('th-data-selection-changed', function() {
-          console.log('??? label selected Handler');
+
           this.labelValueSelection = this.$.data_selector.selections;
           this.reformatData();
+
         }.bind(this));
         
       },
-      /*
-      chartReady: function() {
-        console.log('chartReady');
-        this._configureOptions();
-        self.reformatData();
-      },
-      */
+
       inputChanged: function () {
         var self = this;
         self.chartData = self.input;
-        console.log("inputchanged", self.chartData[0]);
         self.dataAttributes = Object.keys(self.chartData[0]);
         //self.getDefaultSelections();
         self.reformatData();
         self._configureOptions();
         
       },
-      /*
-      labelValueSelectionChanged: function() {
-        console.log('labelValueSelectionChanged');
-        this.inputChanged();
-      },
-      */
-      
-      /*
-      getDefaultSelections: function(){
-        console.log("get selections")
-        
-        var self = this;
-        self.labelValueSelection[0] = self.labelValueSelection[0] || Object.keys(self.chartData[0])[0];
-        self.labelValueSelection[1] = self.labelValueSelection[1] || Object.keys(self.chartData[0]).splice(1);
-        
-        self.labelValueSelection = [self.labelValueSelection[0], self.labelValueSelection[1]];
-        console.log(self.labelValueSelection);
-        console.log(self.labelValueSelection[0]);
-        console.log(self.labelValueSelection[1]);
-      },
-      */
+
+ 
       /**
        * 'reformatData' converts chartData into the correct data structure for the map
        */
@@ -251,45 +208,6 @@ Element providing a Thelma wrapper for the Google Line Chart.
       resize: function() {
         this.$.googleChart.drawChart();
       },
-      
-      /*
-      checkIfSelectedValue: function(value){
-        var self = this;
-        if (self.labelValueSelection[1].indexOf(value) > -1){
-          return "selectedValue";
-        } else {
-          return;
-        }
-      },
-      checkIfSelectedLabel: function(value){
-        var self = this;
-        if (self.labelValueSelection[0] == value){
-          return "labelValueSelection[0]";
-        } else {
-          return;
-        }
-      },
-      togglelabelValueSelection[1]: function(e, detail, selection){
-        var self = this;
-        selection.classList.toggle('selectedValue');
-        // TODO: this can be refactored... selected class is being handled in checkIfSelected filter
-        var selected = self.shadowRoot.querySelectorAll('.selectedValue');
-        self.labelValueSelection[1] = [].map.call(selected, function(item) { return item.textContent});
-        console.log(self.labelValueSelection[1]);
-        self.reformatData();
-      },
-      togglelabelValueSelection[0]: function(e, detail, selection){
-        var self = this;
-        var labels = self.shadowRoot.querySelectorAll('.datalabel');
-        [].forEach.call(labels, function(item){ item.classList.remove('labelValueSelection[0]')});
-        selection.classList.toggle('labelValueSelection[0]');
-        // TODO: this can be refactored... selected class is being handled in checkIfSelected filter
-        var selected = self.shadowRoot.querySelectorAll('.labelValueSelection[0]');
-        self.labelValueSelection[0] = selection.textContent;
-        // console.log(self.labelValueSelection[1]);
-        self.reformatData();
-      }
-      */
 
     });
 
