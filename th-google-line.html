@@ -110,10 +110,15 @@ Element providing a Thelma wrapper for the Google Line Chart.
       inputChanged: function () {
         var self = this;
         self.chartData = self.input;
-        self.dataAttributes = Object.keys(self.chartData[0]);
-        //self.getDefaultSelections();
-        self.reformatData();
-        self._configureOptions();
+
+        if(self.chartData && self.chartData.length>0) {
+
+          self.dataAttributes = Object.keys(self.chartData[0]);
+          //self.getDefaultSelections();
+          self.reformatData();
+          self._configureOptions();
+
+        }
         
       },
 
