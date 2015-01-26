@@ -23,7 +23,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
     <link rel="stylesheet" href="th-google-line.css">
     <th-data-utility id="utility"></th-data-utility>
 
-    <th-u-data-selector data="{{input}}" selection="{{labelValueSelection}}"></th-u-data-selector>
+    <th-u-data-selector id="data_selector" input="{{chartData}}" selections="{{labelValueSelection}}"></th-u-data-selector>
     <!--
     <template if="{{dataAttributes}}">
       <div class="columnNames">
@@ -69,6 +69,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
         {"Year": "2015", "Sales": 50, "Profit": 40},
         {"Year": "2016", "Sales": 300, "Profit": 200}
       ],
+
       /**
        * Data label for X axis
        * @type {String}
@@ -109,20 +110,41 @@ Element providing a Thelma wrapper for the Google Line Chart.
       init: function() {
         this.inputChanged();
       },   
+      ready : function() {
+        //this._configureOptions();
+        console.log('init');
+        this.reformatData();
+        this.$.data_selector.addEventListener('th-data-selection-changed', function() {
+          console.log('??? label selected Handler');
+          this.labelValueSelection = this.$.data_selector.selections;
+          this.reformatData();
+        }.bind(this));
+        
+      },
+      /*
+      chartReady: function() {
+        console.log('chartReady');
+        this._configureOptions();
+        self.reformatData();
+      },
+      */
       inputChanged: function () {
         var self = this;
+        self.chartData = self.input;
         console.log("inputchanged", self.chartData[0]);
-        self.chartData = self.chartData || self.input;
         self.dataAttributes = Object.keys(self.chartData[0]);
         //self.getDefaultSelections();
         self.reformatData();
-        self.configureOptions();
+        self._configureOptions();
         
       },
+      /*
       labelValueSelectionChanged: function() {
         console.log('labelValueSelectionChanged');
         this.inputChanged();
       },
+      */
+      
       /*
       getDefaultSelections: function(){
         console.log("get selections")
@@ -145,10 +167,10 @@ Element providing a Thelma wrapper for the Google Line Chart.
 
         console.log("reformat data", self.labelValueSelection);
 
-        if(!self.labelValueSelection || !self.labelValueSelection[0]) {
+        if(!self.labelValueSelection || !self.labelValueSelection[0] || !self.labelValueSelection[1]) {
           return;
         }
-        //var firstRow = self.labelValueSelection[1].map(function(item){ return item;}) ;
+        var firstRow = self.labelValueSelection[1].map(function(item){ return item;}) ;
         
         self._data = self.chartData.map(function(item){
           var row = [];
@@ -162,15 +184,15 @@ Element providing a Thelma wrapper for the Google Line Chart.
           return row;
         });
 
-        //firstRow.unshift(self.labelValueSelection[0]);
-        //self._data.unshift(firstRow);
+        firstRow.unshift(self.labelValueSelection[0]);
+        self._data.unshift(firstRow);
 
        
       },
       /**
-       * 'configureOptions' sets the appropriate options properties for the map, given the attribute values
+       * '_configureOptions' sets the appropriate options properties for the map, given the attribute values
        */
-      configureOptions: function(){
+      _configureOptions: function(){
         var self = this,
             colors =  self.getColors();
         // Determine intermediate variables
