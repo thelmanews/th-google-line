@@ -107,9 +107,11 @@ Element providing a Thelma wrapper for the Google Line Chart.
        */
       numberFormat: "", 
       labelValueSelection: null,
+      /*
       init: function() {
         this.inputChanged();
-      },   
+      },  
+      */ 
       ready : function() {
         //this._configureOptions();
         console.log('init');
@@ -246,6 +248,10 @@ Element providing a Thelma wrapper for the Google Line Chart.
 
         return colors;
       },
+      resize: function() {
+        this.$.googleChart.drawChart();
+      },
+      
       /*
       checkIfSelectedValue: function(value){
         var self = this;
