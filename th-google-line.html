@@ -17,7 +17,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
 @homepage http://nishacodes.github.io/th-google-regions
 -->
 
-<polymer-element name="th-google-line"  extends="th-d3-chart" attributes="input chartData labelValueSelection[0] labelValueSelection[1] color backgroundColor legend">
+<polymer-element name="th-google-line"  extends="th-d3-chart" attributes="input chartData selectedLabel selectedValues color backgroundColor legend">
   <template> 
     <core-style ref="theme"></core-style>
     <link rel="stylesheet" href="th-google-line.css">
@@ -101,6 +101,10 @@ Element providing a Thelma wrapper for the Google Line Chart.
         this.$.data_selector.addEventListener('th-data-selection-changed', function() {
 
           this.labelValueSelection = this.$.data_selector.selections;
+
+          this.selectedLabel = this.labelValueSelection[0];
+          this.selectedValues = this.labelValueSelection[1];
+
           this.reformatData();
 
         }.bind(this));
@@ -120,6 +124,18 @@ Element providing a Thelma wrapper for the Google Line Chart.
 
         }
         
+      },
+
+      selectedLabelChanged: function() {
+          //if selectedLabel changed from outside, set the internal data_selector
+          this.$.data_selector.selections[0] = this.selectedLabel;
+
+      },
+
+      selectedValuesChanged: function() {
+          //if selectedValue changed from outside, set the internal data_selector
+          this.$.data_selector.selections[1] = this.selectedValues;
+
       },
 
  
