@@ -17,7 +17,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
 @homepage http://nishacodes.github.io/th-google-regions
 -->
 
-<polymer-element name="th-google-line"  extends="th-d3-chart" attributes="input chartData labelValueSelection[0] labelValueSelection[1] color backgroundColor legend">
+<polymer-element name="th-google-line"  extends="th-d3-chart" attributes="input chartData selectedLabel selectedValues color backgroundColor legend labelName series1Name series2Name series3Name">
   <template> 
     <core-style ref="theme"></core-style>
     <link rel="stylesheet" href="th-google-line.css">
@@ -46,10 +46,18 @@ Element providing a Thelma wrapper for the Google Line Chart.
        ** 'value' determines the color of the marker or fill
        * @type {Number}
        */
+      // chartData: [
+      //   {"Year": "2014", "Sales": 100, "Profit": 50},
+      //   {"Year": "2015", "Sales": 50, "Profit": 40},
+      //   {"Year": "2016", "Sales": 300, "Profit": 200}
+      // ],
+      series1Name: 'sales',
+      series2Name: 'profit',
+      labelName: 'year',
       chartData: [
-        {"Year": "2014", "Sales": 100, "Profit": 50},
-        {"Year": "2015", "Sales": 50, "Profit": 40},
-        {"Year": "2016", "Sales": 300, "Profit": 200}
+        {"label": "2014", "series1": 100, "series2": 50},
+        {"label": "2015", "series1": 50, "series2": 40},
+        {"label": "2016", "series1": 300, "series2": 200}
       ],
 
       /**
@@ -101,7 +109,16 @@ Element providing a Thelma wrapper for the Google Line Chart.
         this.$.data_selector.addEventListener('th-data-selection-changed', function() {
 
           this.labelValueSelection = this.$.data_selector.selections;
-          this.reformatData();
+
+          this.selectedLabel = this.labelValueSelection[0];
+          this.selectedValues = this.labelValueSelection[1];
+
+          if (this.labelName & this.series1Name){
+            this.reformatDataThelma();
+          } else {
+            this.reformatData();  
+          }
+          
 
         }.bind(this));
         
@@ -122,6 +139,18 @@ Element providing a Thelma wrapper for the Google Line Chart.
         
       },
 
+      selectedLabelChanged: function() {
+          //if selectedLabel changed from outside, set the internal data_selector
+          this.$.data_selector.selections[0] = this.selectedLabel;
+
+      },
+
+      selectedValuesChanged: function() {
+          //if selectedValue changed from outside, set the internal data_selector
+          this.$.data_selector.selections[1] = this.selectedValues;
+
+      },
+
  
       /**
        * 'reformatData' converts chartData into the correct data structure for the map
@@ -131,13 +160,57 @@ Element providing a Thelma wrapper for the Google Line Chart.
 
         console.log("reformat data", self.labelValueSelection);
 
+        self.labelValueSelection = [self.labelName, [self.series1Name]];
+        if (self.series2Name.length && self.series2Name.length > 0){
+          self.labelValueSelection[1].push(self.series2Name);
+        }
+        if (self.series3Name.length && self.series3Name.length > 0){
+          self.labelValueSelection[1].push(self.series3Name);
+        }
+
+
+        var firstRow = self.labelValueSelection[1].map(function(item){ return item;}) ;
+        firstRow.unshift(self.labelValueSelection[0]);
+
+        self._data = self.chartData.map(function(item){
+          var row = [];
+          row.push(item.label);
+          row.push(self.$.utility.unformatString(item.series1));
+          if (item.series2){
+            row.push(self.$.utility.unformatString(item.series2));
+          }
+          if (item.series3){
+           row.push(self.$.utility.unformatString(item.series3)); 
+          }
+          // for(var i=0; i<self.labelValueSelection[1].length; i++){
+            
+          //   var unformattedValue = self.$.utility.unformatString(item[self.labelValueSelection[1][i]]);
+          //   console.log(unformattedValue);
+          //   row.push(unformattedValue);
+          // }
+          return row;
+        });
+
+        
+        self._data.unshift(firstRow);
+console.log("***");
+console.log(self._data);
+       
+      },
+      reformatDataThelma: function(){
+        var self = this; 
+
+        console.log("reformat data", self.labelValueSelection);
+
         if(!self.labelValueSelection || !self.labelValueSelection[0] || !self.labelValueSelection[1]) {
           return;
         }
+
         var firstRow = self.labelValueSelection[1].map(function(item){ return item;}) ;
         
         self._data = self.chartData.map(function(item){
           var row = [];
+
           row.push(item[self.labelValueSelection[0]]);
           for(var i=0; i<self.labelValueSelection[1].length; i++){
             
@@ -150,8 +223,6 @@ Element providing a Thelma wrapper for the Google Line Chart.
 
         firstRow.unshift(self.labelValueSelection[0]);
         self._data.unshift(firstRow);
-
-       
       },
       /**
        * '_configureOptions' sets the appropriate options properties for the map, given the attribute values
