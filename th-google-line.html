@@ -22,9 +22,9 @@ Element providing a Thelma wrapper for the Google Line Chart.
     <core-style ref="theme"></core-style>
     <link rel="stylesheet" href="th-google-line.css">
     <th-data-utility id="utility"></th-data-utility>
-
+<template if="{{!thelma}}">
     <th-u-data-selector id="data_selector" input="{{chartData}}" selections="{{labelValueSelection}}"></th-u-data-selector>
- 
+</template> 
     <google-chart id="googleChart" style="width:100%; height: 85%;"
           type='line'
           options= "{{options}}"
@@ -35,36 +35,18 @@ Element providing a Thelma wrapper for the Google Line Chart.
   <script>
 
     Polymer('th-google-line', {
-
-      /**
-       ** 'chartData' is the data represented by the map. 
-       * @type {Array}
-       *
-       ** 'region' can be a country, state, or metro 
-       * @type {String}
-       *
-       ** 'value' determines the color of the marker or fill
-       * @type {Number}
-       */
-      // chartData: [
-      //   {"Year": "2014", "Sales": 100, "Profit": 50},
-      //   {"Year": "2015", "Sales": 50, "Profit": 40},
-      //   {"Year": "2016", "Sales": 300, "Profit": 200}
-      // ],
       series1Name: 'sales',
       series2Name: 'profit',
       labelName: 'year',
+      /**
+       ** 'chartData' is the data represented by the map. 
+       * @type {Array}
+       */
       chartData: [
         {"label": "2014", "series1": 100, "series2": 50},
         {"label": "2015", "series1": 50, "series2": 40},
         {"label": "2016", "series1": 300, "series2": 200}
       ],
-
-      /**
-       * Data label for X axis
-       * @type {String}
-       */
-      // dataLabels: ["Life Expectancy","Fertility Rate","Growth"],
       /**
        * 'chartWidth' refers to the width of the element container
        * @type {Number}
@@ -96,32 +78,32 @@ Element providing a Thelma wrapper for the Google Line Chart.
        * @example: '.##'
        */
       numberFormat: "", 
+      thelma: true,
       labelValueSelection: null,
-      /*
-      init: function() {
-        this.inputChanged();
-      },  
-      */ 
+
       ready : function() {
-        //this._configureOptions();
-        console.log('init');
-        this.reformatData();
-        this.$.data_selector.addEventListener('th-data-selection-changed', function() {
-
-          this.labelValueSelection = this.$.data_selector.selections;
-
-          this.selectedLabel = this.labelValueSelection[0];
-          this.selectedValues = this.labelValueSelection[1];
-
-          if (this.labelName & this.series1Name){
-            this.reformatDataThelma();
-          } else {
-            this.reformatData();  
-          }
-          
-
-        }.bind(this));
+        this._configureOptions();
         
+        if (this.thelma){
+          this.reformatDataThelma();
+        } else {
+          this.reformatData();  
+          this.$.data_selector.addEventListener('th-data-selection-changed', function() {
+
+            this.labelValueSelection = this.$.data_selector.selections;
+
+            this.selectedLabel = this.labelValueSelection[0];
+            this.selectedValues = this.labelValueSelection[1];
+
+            if (this.labelName & this.series1Name){
+              this.reformatDataThelma();
+            } else {
+              this.reformatData();  
+            }
+            
+
+          }.bind(this));
+        }
       },
 
       inputChanged: function () {
@@ -132,7 +114,11 @@ Element providing a Thelma wrapper for the Google Line Chart.
 
           self.dataAttributes = Object.keys(self.chartData[0]);
           //self.getDefaultSelections();
-          self.reformatData();
+          if (self.thelma){
+            self.reformatDataThelma();
+          } else {
+            self.reformatData();
+          }
           self._configureOptions();
 
         }
@@ -151,23 +137,19 @@ Element providing a Thelma wrapper for the Google Line Chart.
 
       },
 
- 
       /**
-       * 'reformatData' converts chartData into the correct data structure for the map
+       * 'reformatDataThelma' converts chartData into the correct data structure using Thelma-composer specific attrs
        */
-      reformatData: function(){
+      reformatDataThelma: function(){
         var self = this; 
 
-        console.log("reformat data", self.labelValueSelection);
-
         self.labelValueSelection = [self.labelName, [self.series1Name]];
-        if (self.series2Name.length && self.series2Name.length > 0){
+        if (self.series2Name && self.series2Name.length > 0){
           self.labelValueSelection[1].push(self.series2Name);
         }
-        if (self.series3Name.length && self.series3Name.length > 0){
+        if (self.series3Name && self.series3Name.length > 0){
           self.labelValueSelection[1].push(self.series3Name);
         }
-
 
         var firstRow = self.labelValueSelection[1].map(function(item){ return item;}) ;
         firstRow.unshift(self.labelValueSelection[0]);
@@ -182,25 +164,18 @@ Element providing a Thelma wrapper for the Google Line Chart.
           if (item.series3){
            row.push(self.$.utility.unformatString(item.series3)); 
           }
-          // for(var i=0; i<self.labelValueSelection[1].length; i++){
-            
-          //   var unformattedValue = self.$.utility.unformatString(item[self.labelValueSelection[1][i]]);
-          //   console.log(unformattedValue);
-          //   row.push(unformattedValue);
-          // }
+
           return row;
         });
-
-        
-        self._data.unshift(firstRow);
-console.log("***");
-console.log(self._data);
-       
+        self._data.unshift(firstRow);       
       },
-      reformatDataThelma: function(){
+      /**
+       * 'reformatData' converts chartData into array of arrays, based on the selected label and values
+       * @return {[type]} [description]
+       */
+      reformatData: function(){
         var self = this; 
 
-        console.log("reformat data", self.labelValueSelection);
 
         if(!self.labelValueSelection || !self.labelValueSelection[0] || !self.labelValueSelection[1]) {
           return;
@@ -278,7 +253,6 @@ console.log(self._data);
         }
 
         colors.count = colors.accents.length;
-
         return colors;
       },
       resize: function() {
