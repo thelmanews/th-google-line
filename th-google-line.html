@@ -25,7 +25,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
     <template if="{{!thelma}}">
     <th-u-data-selector id="data_selector" input="{{chartData}}" selections="{{labelValueSelection}}"></th-u-data-selector>
     </template> 
-    <google-chart id="googleChart" style="width:100%; height: 85%;"
+    <google-chart id="googleChart" style="width:100%; height: 100%;"
           type='line'
           options= "{{options}}"
           data="{{_data}}">
@@ -189,7 +189,6 @@ Element providing a Thelma wrapper for the Google Line Chart.
       reformatData: function(){
         var self = this; 
 
-
         if(!self.labelValueSelection || !self.labelValueSelection[0] || !self.labelValueSelection[1]) {
           return;
         }
@@ -201,7 +200,6 @@ Element providing a Thelma wrapper for the Google Line Chart.
 
           row.push(item[self.labelValueSelection[0]]);
           for(var i=0; i<self.labelValueSelection[1].length; i++){
-            
             var unformattedValue = self.$.utility.unformatString(item[self.labelValueSelection[1][i]]);
             console.log(unformattedValue);
             row.push(unformattedValue);
@@ -228,6 +226,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
         self.options = {
           orientation: self.orientation,
           colors: colors.accents,
+          chartArea:{left:'auto',top:'auto', width: '80%', height:'80%'},
           colorAxis: { colors: [colors.theme.accent1, colors.theme.accent2] , legend : {textStyle : textColorSetting, position: 'bottom'}  },
           backgroundColor: self.backgroundColor || "none",
           animation: {duration: "500"},
@@ -251,7 +250,6 @@ Element providing a Thelma wrapper for the Google Line Chart.
                 count: 0,
                 color:  colors.theme.foreground1
               }
-
             },
           vAxis: {
             baselineColor: colors.theme.foreground1,
@@ -265,7 +263,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
         };
 
         if (!self.legend) { self.options.legend = 'none';}
-        
+
       },
       /**
        * 'getColors' gets the color theme from the global scope
