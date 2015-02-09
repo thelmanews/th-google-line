@@ -2,6 +2,7 @@
 <link rel="import" href="../th-d3-chart/th-d3-chart.html">
 <link rel="import" href="../google-chart/google-chart.html">
 <link rel="import" href="../th-data-utility/th-data-utility.html">
+<link rel="import" href="../th-u-data-selector/th-u-data-selector.html">
 
 <!--
 Element providing a Thelma wrapper for the Google Line Chart.
@@ -21,7 +22,9 @@ Element providing a Thelma wrapper for the Google Line Chart.
     <core-style ref="theme"></core-style>
     <link rel="stylesheet" href="th-google-line.css">
     <th-data-utility id="utility"></th-data-utility>
-    
+    <template if="{{!thelma}}">
+    <th-u-data-selector id="data_selector" input="{{chartData}}" selections="{{labelValueSelection}}"></th-u-data-selector>
+    </template> 
     <google-chart id="googleChart" style="width:100%; height: 85%;"
           type='line'
           options= "{{options}}"
@@ -32,16 +35,17 @@ Element providing a Thelma wrapper for the Google Line Chart.
   <script>
 
     Polymer('th-google-line', {
-      series1Name: 'sales',
-      series2Name: 'profit',
-      labelName: 'year',
+      series1Name: 'Sales',
+      series2Name: 'Profit',
+      // numGridlines: 5, 
+      labelName: 'Year',
       /**
        ** 'chartData' is the data represented by the map. 
        * @type {Array}
        */
       chartData: [
         {"label": "2014", "series1": 100, "series2": 50},
-        {"label": "2015", "series1": 50},
+        {"label": "2015", "series1": 150, "series2": 50},
         {"label": "2016", "series1": 300, "series2": 200}
       ],
       /**
@@ -80,9 +84,27 @@ Element providing a Thelma wrapper for the Google Line Chart.
 
       ready : function() {
         this._configureOptions();
-
-        this.reformatDataThelma();
         
+        if (this.thelma){
+          this.reformatDataThelma();
+        } else {
+          this.reformatData();  
+          this.$.data_selector.addEventListener('th-data-selection-changed', function() {
+
+            this.labelValueSelection = this.$.data_selector.selections;
+
+            this.selectedLabel = this.labelValueSelection[0];
+            this.selectedValues = this.labelValueSelection[1];
+
+            if (this.labelName & this.series1Name){
+              this.reformatDataThelma();
+            } else {
+              this.reformatData();  
+            }
+            
+
+          }.bind(this));
+        }
       },
 
       inputChanged: function () {
@@ -93,29 +115,37 @@ Element providing a Thelma wrapper for the Google Line Chart.
 
           self.dataAttributes = Object.keys(self.chartData[0]);
           //self.getDefaultSelections();
-          // if (self.thelma){
+          if (self.thelma){
             self.reformatDataThelma();
-          // } else {
-          //   self.reformatData();
-          // }
+          } else {
+            self.reformatData();
+          }
           self._configureOptions();
 
         }
         
       },
 
-      // selectedLabelChanged: function() {
-      //     //if selectedLabel changed from outside, set the internal data_selector
-      //     this.$.data_selector.selections[0] = this.selectedLabel;
+      selectedLabelChanged: function() {
+          //if selectedLabel changed from outside, set the internal data_selector
+          this.$.data_selector.selections[0] = this.selectedLabel;
 
-      // },
+      },
 
-      // selectedValuesChanged: function() {
-      //     //if selectedValue changed from outside, set the internal data_selector
-      //     this.$.data_selector.selections[1] = this.selectedValues;
+      selectedValuesChanged: function() {
+          //if selectedValue changed from outside, set the internal data_selector
+          this.$.data_selector.selections[1] = this.selectedValues;
 
-      // },
-
+      },
+      series1NameChanged: function(){
+        this.reformatDataThelma();
+      },
+      series2NameChanged: function(){
+        this.reformatDataThelma();
+      },
+      series3NameChanged: function(){
+        this.reformatDataThelma();
+      },
       /**
        * 'reformatDataThelma' converts chartData into the correct data structure using Thelma-composer specific attrs
        */
@@ -124,9 +154,11 @@ Element providing a Thelma wrapper for the Google Line Chart.
 
         self.labelValueSelection = [self.labelName, [self.series1Name]];
         if (self.series2Name && self.series2Name.length > 0  && self.chartData[0].series2){
+          var series2 = true;
           self.labelValueSelection[1].push(self.series2Name);
         }
         if (self.series3Name && self.series3Name.length > 0  && self.chartData[0].series3){
+          var series3 = true;
           self.labelValueSelection[1].push(self.series3Name);
         }
 
@@ -137,11 +169,13 @@ Element providing a Thelma wrapper for the Google Line Chart.
           var row = [];
           row.push(item.label);
           row.push(self.$.utility.unformatString(item.series1));
-          if (item.series2){
-            row.push(self.$.utility.unformatString(item.series2));
+          if (series2){
+            var series2val = item.series2 ? self.$.utility.unformatString(item.series2) : null;
+            row.push(series2val);
           }
-          if (item.series3){
-           row.push(self.$.utility.unformatString(item.series3)); 
+          if (series3){
+            var series3val = item.series3 ? self.$.utility.unformatString(item.series3) : null;
+           row.push(series3val); 
           }
 
           return row;
@@ -190,31 +224,48 @@ Element providing a Thelma wrapper for the Google Line Chart.
         self.minValue = self.minValue || 0;
 
         var textColorSetting = { color: colors.theme.foreground2, fontName: colors.theme.font, fontSize: '0.8em', opacity: 0.7};
-
         // Define chart options 
         self.options = {
           orientation: self.orientation,
           colors: colors.accents,
+          colorAxis: { colors: [colors.theme.accent1, colors.theme.accent2] , legend : {textStyle : textColorSetting, position: 'bottom'}  },
           backgroundColor: self.backgroundColor || "none",
           animation: {duration: "500"},
           legend: { 
             position: "bottom",
             alignment: "center",
             numberFormat: self.numberFormat,
+            maxLines: 2,
             textStyle: { 
-              // color: colors.theme.foreground1, 
+              color: colors.theme.foreground1, 
               fontName: colors.theme.font, 
               fontSize: '0.85em',
               stroke: 'none',
               strokeWidth: '0'            
             } 
           },
+          hAxis: {
+            baselineColor: colors.theme.foreground1,
+              textStyle:{ color: colors.theme.foreground1, fontName: colors.theme.font, fontSize: '0.85em'},
+              gridlines: {
+                count: 0,
+                color:  colors.theme.foreground1
+              }
+
+            },
           vAxis: {
+            baselineColor: colors.theme.foreground1,
+            gridlines: {
+              // count: self.numGridlines,
+              color:  colors.theme.foreground1,
+            },
+            textStyle:{ color: colors.theme.foreground1, fontName: colors.theme.font, fontSize: '0.85em'},
             format: "#,###.##" //TODO: add more options here and figure out how to format numbers in tooltips
           }
         };
 
         if (!self.legend) { self.options.legend = 'none';}
+        
       },
       /**
        * 'getColors' gets the color theme from the global scope
