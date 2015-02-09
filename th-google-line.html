@@ -22,9 +22,9 @@ Element providing a Thelma wrapper for the Google Line Chart.
     <core-style ref="theme"></core-style>
     <link rel="stylesheet" href="th-google-line.css">
     <th-data-utility id="utility"></th-data-utility>
-<template if="{{!thelma}}">
+    <template if="{{!thelma}}">
     <th-u-data-selector id="data_selector" input="{{chartData}}" selections="{{labelValueSelection}}"></th-u-data-selector>
-</template> 
+    </template> 
     <google-chart id="googleChart" style="width:100%; height: 85%;"
           type='line'
           options= "{{options}}"
@@ -44,7 +44,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
        */
       chartData: [
         {"label": "2014", "series1": 100, "series2": 50},
-        {"label": "2015", "series1": 50, "series2": 40},
+        {"label": "2015", "series1": 50},
         {"label": "2016", "series1": 300, "series2": 200}
       ],
       /**
@@ -144,10 +144,10 @@ Element providing a Thelma wrapper for the Google Line Chart.
         var self = this; 
 
         self.labelValueSelection = [self.labelName, [self.series1Name]];
-        if (self.series2Name && self.series2Name.length > 0){
+        if (self.series2Name && self.series2Name.length > 0  && self.chartData[0].series2){
           self.labelValueSelection[1].push(self.series2Name);
         }
-        if (self.series3Name && self.series3Name.length > 0){
+        if (self.series3Name && self.series3Name.length > 0  && self.chartData[0].series3){
           self.labelValueSelection[1].push(self.series3Name);
         }
 
