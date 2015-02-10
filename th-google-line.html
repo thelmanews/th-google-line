@@ -35,19 +35,17 @@ Element providing a Thelma wrapper for the Google Line Chart.
   <script>
 
     Polymer('th-google-line', {
-      series1Name: 'Sales',
-      series2Name: 'Profit',
-      // numGridlines: 5, 
+
       labelName: 'Year',
       /**
        ** 'chartData' is the data represented by the map. 
        * @type {Array}
        */
-      chartData: [
-        {"label": "2014", "series1": 100, "series2": 50},
-        {"label": "2015", "series1": 150, "series2": 50},
-        {"label": "2016", "series1": 300, "series2": 200}
-      ],
+      // chartData: [
+      //   {"label": "2014", "series1": 100, "series2": 50},
+      //   {"label": "2015", "series1": 120, "series2": 50},
+      //   {"label": "2016", "series1": 300, "series2": 200}
+      // ],
       /**
        * 'chartWidth' refers to the width of the element container
        * @type {Number}
@@ -129,13 +127,10 @@ Element providing a Thelma wrapper for the Google Line Chart.
       selectedLabelChanged: function() {
           //if selectedLabel changed from outside, set the internal data_selector
           this.$.data_selector.selections[0] = this.selectedLabel;
-
       },
-
       selectedValuesChanged: function() {
           //if selectedValue changed from outside, set the internal data_selector
           this.$.data_selector.selections[1] = this.selectedValues;
-
       },
       series1NameChanged: function(){
         this.reformatDataThelma();
@@ -152,7 +147,12 @@ Element providing a Thelma wrapper for the Google Line Chart.
       reformatDataThelma: function(){
         var self = this; 
 
-        self.labelValueSelection = [self.labelName, [self.series1Name]];
+        self.labelValueSelection = [self.labelName, []];
+        var seriesNames = [self.series1Name, self.series2Name, self.series3Name];
+        if (self.series1Name && self.series1Name.length > 0  && self.chartData[0].series1){
+          var series1 = true;
+          self.labelValueSelection[1].push(self.series1Name);
+        }
         if (self.series2Name && self.series2Name.length > 0  && self.chartData[0].series2){
           var series2 = true;
           self.labelValueSelection[1].push(self.series2Name);
@@ -160,7 +160,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
         if (self.series3Name && self.series3Name.length > 0  && self.chartData[0].series3){
           var series3 = true;
           self.labelValueSelection[1].push(self.series3Name);
-        }
+        } 
 
         var firstRow = self.labelValueSelection[1].map(function(item){ return item;}) ;
         firstRow.unshift(self.labelValueSelection[0]);
@@ -168,13 +168,16 @@ Element providing a Thelma wrapper for the Google Line Chart.
         self._data = self.chartData.map(function(item){
           var row = [];
           row.push(item.label);
-          row.push(self.$.utility.unformatString(item.series1));
+          if (series1){
+            var series1val = item.series1 || item.series1 === 0 ? self.$.utility.unformatString(item.series1) : null;
+            row.push(series1val);
+          }
           if (series2){
-            var series2val = item.series2 ? self.$.utility.unformatString(item.series2) : null;
+            var series2val = item.series2 || item.series2 === 0 ? self.$.utility.unformatString(item.series2) : null;
             row.push(series2val);
           }
           if (series3){
-            var series3val = item.series3 ? self.$.utility.unformatString(item.series3) : null;
+            var series3val = item.series3 || item.series3 === 0 ? self.$.utility.unformatString(item.series3) : null;
            row.push(series3val); 
           }
 
@@ -245,16 +248,11 @@ Element providing a Thelma wrapper for the Google Line Chart.
           },
           hAxis: {
             baselineColor: colors.theme.foreground1,
-              textStyle:{ color: colors.theme.foreground1, fontName: colors.theme.font, fontSize: '0.85em'},
-              gridlines: {
-                count: 0,
-                color:  colors.theme.foreground1
-              }
-            },
+            textStyle:{ color: colors.theme.foreground1, fontName: colors.theme.font, fontSize: '0.85em'}
+          },
           vAxis: {
             baselineColor: colors.theme.foreground1,
             gridlines: {
-              // count: self.numGridlines,
               color:  colors.theme.foreground1,
             },
             textStyle:{ color: colors.theme.foreground1, fontName: colors.theme.font, fontSize: '0.85em'},
