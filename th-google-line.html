@@ -17,7 +17,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
 @homepage http://nishacodes.github.io/th-google-regions
 -->
 
-<polymer-element name="th-google-line"  extends="th-d3-chart" attributes="input chartData selectedLabel selectedValues color backgroundColor legend labelName series1Name series2Name series3Name">
+<polymer-element name="th-google-line"  extends="th-d3-chart" attributes="input chartData selectedLabel selectedValues color backgroundColor legend labelName series1Name series2Name series3Name gridlines">
   <template> 
     <core-style ref="theme"></core-style>
     <link rel="stylesheet" href="th-google-line.css">
@@ -35,7 +35,6 @@ Element providing a Thelma wrapper for the Google Line Chart.
   <script>
 
     Polymer('th-google-line', {
-
       labelName: 'Year',
       /**
        ** 'chartData' is the data represented by the map. 
@@ -71,6 +70,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
        * @type {Boolean}
        */
       legend: true,
+      gridlines: 5, 
       /**
        * 'numberFormat' refers to the number format of the legend min and max
        * @type {String}
@@ -253,6 +253,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
           vAxis: {
             baselineColor: colors.theme.foreground1,
             gridlines: {
+              count: self.gridlines,
               color:  colors.theme.foreground1,
             },
             textStyle:{ color: colors.theme.foreground1, fontName: colors.theme.font, fontSize: '0.85em'},
