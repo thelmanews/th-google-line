@@ -97,7 +97,6 @@ Element providing a Thelma wrapper for the Google Line Chart.
       */ 
       ready : function() {
         //this._configureOptions();
-        console.log('init');
         this.reformatData();
         this.$.data_selector.addEventListener('th-data-selection-changed', function() {
 
@@ -146,8 +145,6 @@ Element providing a Thelma wrapper for the Google Line Chart.
       reformatData: function(){
         var self = this; 
 
-        console.log("reformat data", self.labelValueSelection);
-
         if(!self.labelValueSelection || !self.labelValueSelection[0] || !self.labelValueSelection[1]) {
           return;
         }
@@ -159,7 +156,6 @@ Element providing a Thelma wrapper for the Google Line Chart.
           for(var i=0; i<self.labelValueSelection[1].length; i++){
             
             var unformattedValue = self.$.utility.unformatString(item[self.labelValueSelection[1][i]]);
-            console.log(unformattedValue);
             row.push(unformattedValue);
           }
           return row;
