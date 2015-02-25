@@ -1,3 +1,4 @@
+
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../th-d3-chart/th-d3-chart.html">
 <link rel="import" href="../google-chart/google-chart.html">
@@ -18,7 +19,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
 @homepage http://nishacodes.github.io/th-google-regions
 -->
 
-<polymer-element name="th-google-line"  extends="th-d3-chart" attributes="input chartData selectedLabel selectedValues color backgroundColor legend showOptions labelValueSelection">
+<polymer-element name="th-google-line"  extends="th-d3-chart" attributes="input chartData selectedLabel selectedValues color backgroundColor legend showOptions labelValueSelection chartTitle gridlines orientation yAxisMin yAxisMax">
   <template> 
     <core-style ref="theme"></core-style>
     <link rel="stylesheet" href="th-google-line.css">
@@ -103,6 +104,16 @@ Element providing a Thelma wrapper for the Google Line Chart.
       numberFormat: "", 
       labelValueSelection: null,
       showOptions: true,
+      gridlines: 5,
+      orientation: 'horizontal',
+      observe: {
+        legend: "updateOptions",
+        orientation: "updateOptions",
+        gridlines: "updateOptions",
+        chartTitle: "updateOptions",
+        yAxisMin: "updateOptions",
+        yAxisMax: "updateOptions"
+      },
       /*
       init: function() {
         this.inputChanged();
@@ -179,6 +190,10 @@ Element providing a Thelma wrapper for the Google Line Chart.
         self._data.unshift(firstRow);
         self.fire("th-output-ready")
       },
+      updateOptions: function(){
+        this._configureOptions();
+        this.$.googleChart.drawChart();
+      },
       /**
        * '_configureOptions' sets the appropriate options properties, given the attribute values
        */
@@ -194,6 +209,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
 
         // Define chart options 
         self.options = {
+          title: self.chartTitle,
           orientation: self.orientation,
           colors: colors.accents,
           backgroundColor: self.backgroundColor || "none",
@@ -211,7 +227,20 @@ Element providing a Thelma wrapper for the Google Line Chart.
             } 
           },
           vAxis: {
-            format: "#,###.##" //TODO: add more options here and figure out how to format numbers in tooltips
+            format: "#,###.##",  //TODO: add more options here and figure out how to format numbers in tooltips
+            gridlines: {
+              count: self.gridlines
+            },
+            minValue: self.orientation === "horizontal" ? self.yAxisMin : "automatic",
+            maxValue: self.orientation === "horizontal" ? self.yAxisMax : "automatic",
+          },
+          hAxis: {
+            format: "#,###.##",  //TODO: add more options here and figure out how to format numbers in tooltips
+            gridlines: {
+              count: self.gridlines
+            },
+            minValue: self.orientation === "vertical" ? self.yAxisMin : "automatic",
+            maxValue: self.orientation === "vertical" ? self.yAxisMax : "automatic",
           }
         };
 
@@ -242,6 +271,23 @@ Element providing a Thelma wrapper for the Google Line Chart.
       },
       displayFilter: function(value){
         return value ? "inline-block" : "none";
+      },
+      getMetaData: function(){
+        return {
+          "name": "th-google-line",
+          "description": "Multi Line Chart by Google",
+          "category":"chart",
+          "version": "0.0.1",
+          "inputAttr": {
+            "chartTitle":{"friendly":"Title", "type":"string", "default":""},
+            "orientation": {"friendly":"Orientation", "type": "dropdown", "default": "horizontal", "values":["horizontal", "vertical"]},
+            "gridlines":{"friendly":"Number of Gridlines", "type":"int", "default":"5"},
+            "yAxisMin":{"friendly":"Y Axis Min", "type":"int", "default":""},
+            "yAxisMax":{"friendly":"Y Axis Max", "type":"int", "default":""},
+            "legend":{"friendly":"Show Legend?", "type":"boolean", "default": true}
+          }
+        }
+
       }
 
     });
