@@ -12,6 +12,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
     <th-google-line></th-google-line>
 
 @element th-google-line
+@group Lenses visualize component
 @blurb Element providing a Thelma wrapper for the Google geochart.
 @status alpha
 @homepage http://nishacodes.github.io/th-google-regions
@@ -36,15 +37,12 @@ Element providing a Thelma wrapper for the Google Line Chart.
 
     Polymer('th-google-line', {
 
+
       /**
-       ** 'chartData' is the data represented by the map. 
-       * @type {Array}
-       *
-       ** 'region' can be a country, state, or metro 
-       * @type {String}
-       *
-       ** 'value' determines the color of the marker or fill
-       * @type {Number}
+       * 'chartData' is the data represented by the graph. 
+       * @property chartData
+       * @type Array
+       * @default [{"Year":"2014", ...}]
        */
       chartData: [
         {"Year": "2014", "Sales": 100, "Profit": 50},
@@ -53,37 +51,43 @@ Element providing a Thelma wrapper for the Google Line Chart.
       ],
 
       /**
-       * Data label for X axis
-       * @type {String}
-       */
-      // dataLabels: ["Life Expectancy","Fertility Rate","Growth"],
-      /**
        * 'chartWidth' refers to the width of the element container
-       * @type {Number}
+       * @property chartWidth
+       * @type Number
+       * @default 280
        */
       chartWidth: 280,
       /**
        * 'chartHeight' refers to the height of the element container
-       * @type {Number}
+       * @property chartHeight
+       * @type Number
+       * @default 400
        */
       chartHeight: 400,
       /**
        * 'backgroundColor' refers to the background color of the container
-       * @type {String}
+       * @property backgroundColor
+       * @type String
+       * @default ""
        */
       backgroundColor: "",
       /**
        * 'color' determines the range of the fill color of the regions
-       * @type {String}
+       *
+       *  @property color
+       *  @type {String}
        */
       color: "",
       /**
        * 'legend' determines whether or not to display a legend
+       * @property legend
        * @type {Boolean}
        */
       legend: true,
       /**
        * 'numberFormat' refers to the number format of the legend min and max
+       * 
+       * @property numberFormat
        * @type {String}
        * @example: '.##'
        */
@@ -138,9 +142,10 @@ Element providing a Thelma wrapper for the Google Line Chart.
 
       },
 
- 
       /**
-       * 'reformatData' converts chartData into the correct data structure for the map
+       * 'reformatData' converts chartData into the correct data structure
+       *
+       *  @method reformatData
        */
       reformatData: function(){
         var self = this; 
@@ -163,11 +168,10 @@ Element providing a Thelma wrapper for the Google Line Chart.
 
         firstRow.unshift(self.labelValueSelection[0]);
         self._data.unshift(firstRow);
-
-       
+        self.fire('th-output-ready')
       },
       /**
-       * '_configureOptions' sets the appropriate options properties for the map, given the attribute values
+       * '_configureOptions' sets the appropriate options properties, given the attribute values
        */
       _configureOptions: function(){
         var self = this,
@@ -206,7 +210,9 @@ Element providing a Thelma wrapper for the Google Line Chart.
       },
       /**
        * 'getColors' gets the color theme from the global scope
-       * @return {Object}
+       *
+       *  @method getColors
+       *  @return Object
        */
       getColors: function(){
         colors = {};
@@ -220,7 +226,6 @@ Element providing a Thelma wrapper for the Google Line Chart.
         }
 
         colors.count = colors.accents.length;
-
         return colors;
       },
       resize: function() {

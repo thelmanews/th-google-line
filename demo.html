@@ -8,18 +8,81 @@
   <link rel="import" href="th-google-line.html">
 
 </head>
-  
   <style>
     body {
       font-family: arial;
-      
-    }
+      font-size: 14px;
+      }
+
+      pre {
+        border: 1px solid #EEE;
+        font-size: 12px;
+        max-width: 300px;
+        max-height: 300px;
+        overflow: scroll;
+
+      }
+      #component {
+        border: 1px solid #BBB;
+        margin: 10px;
+        padding: 5px;
+        display: block;
+        width: 300px;
+      }
+
+      .component::before, .component::after {
+        content: '\2794';
+        position: absolute;
+        top: 50%;
+      }
+      .component::before {
+        right: -15px;
+      }
+
+      .component::after {
+        left: -15px;
+      }
+
+      section {
+        display: inline-block;
+        margin: 8px;
+        vertical-align: top;
+        position: relative;
+      }
+      html /deep/ input[is=core-input] {
+        border-bottom: 1px solid #E5E5E5 !important;
+      }
+
   </style>
 <body unresolved>
 
-  <p>An `th-google-line` looks like this:</p>
+  <template id="auto-bind-demo" is="auto-binding">
 
-  <th-google-line></th-google-line>
-    
+    <p>A `th-google-line` looks like this:</p>
+      <section>
+        <th-google-line></th-google-line>
+      </section>
+      <section>
+        <pre id="input">
+[
+  {
+    "Year": "2014",
+    "Sales": 100,
+    "Profit": 50
+  },
+  {
+    "Year": "2015",
+    "Sales": 50,
+    "Profit": 40
+  },
+  {
+    "Year": "2016",
+    "Sales": 300,
+    "Profit": 200
+  }
+];
+        </pre>
+      </section>
+  </template>
 </body>
 </html>
