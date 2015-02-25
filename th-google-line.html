@@ -1,3 +1,4 @@
+
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../th-d3-chart/th-d3-chart.html">
 <link rel="import" href="../google-chart/google-chart.html">
@@ -17,7 +18,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
 @homepage http://nishacodes.github.io/th-google-regions
 -->
 
-<polymer-element name="th-google-line"  extends="th-d3-chart" attributes="input chartData selectedLabel selectedValues color backgroundColor legend showOptions labelValueSelection chartTitle gridlines">
+<polymer-element name="th-google-line"  extends="th-d3-chart" attributes="input chartData selectedLabel selectedValues color backgroundColor legend showOptions labelValueSelection chartTitle gridlines orientation yAxisMin yAxisMax">
   <template> 
     <core-style ref="theme"></core-style>
     <link rel="stylesheet" href="th-google-line.css">
@@ -91,6 +92,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
       labelValueSelection: null,
       showOptions: true,
       gridlines: 5,
+      orientation: 'horizontal',
       /*
       init: function() {
         this.inputChanged();
@@ -203,7 +205,17 @@ Element providing a Thelma wrapper for the Google Line Chart.
             format: "#,###.##",  //TODO: add more options here and figure out how to format numbers in tooltips
             gridlines: {
               count: self.gridlines
-            } 
+            },
+            minValue: self.orientation === "horizontal" ? self.yAxisMin : "automatic",
+            maxValue: self.orientation === "horizontal" ? self.yAxisMax : "automatic",
+          },
+          hAxis: {
+            format: "#,###.##",  //TODO: add more options here and figure out how to format numbers in tooltips
+            gridlines: {
+              count: self.gridlines
+            },
+            minValue: self.orientation === "vertical" ? self.yAxisMin : "automatic",
+            maxValue: self.orientation === "vertical" ? self.yAxisMax : "automatic",
           }
         };
 
@@ -234,6 +246,23 @@ Element providing a Thelma wrapper for the Google Line Chart.
       displayFilter: function(value){
         return value ? "inline-block" : "none";
       },
+      getMetaData: function(){
+        return {
+          "name": "th-google-line",
+          "description": "Multi Line Chart by Google",
+          "category":"chart",
+          "version": "0.0.1",
+          "inputAttr": {
+            "chartTitle":{"friendly":"Title", "type":"string", "default":""},
+            "orientation": {"friendly":"Orientation", "type": "dropdown", "default": "horizontal", "values":["horizontal", "vertical"]},
+            "gridlines":{"friendly":"Number of Gridlines", "type":"int", "default":"5"},
+            "yAxisMin":{"friendly":"Y Axis Min", "type":"int", "default":""},
+            "yAxisMax":{"friendly":"Y Axis Max", "type":"int", "default":""},
+            "legend":{"friendly":"Show Legend?", "type":"boolean", "default": true}
+          }
+        }
+
+      },
       legendChanged: function(){
         this._configureOptions();
         this.$.googleChart.drawChart();
@@ -250,19 +279,13 @@ Element providing a Thelma wrapper for the Google Line Chart.
         this._configureOptions();
         this.$.googleChart.drawChart();
       },
-      getMetaData: function(){
-        return {
-          "name": "th-google-line",
-          "description": "Multi Line Chart by Google",
-          "category":"chart",
-          "version": "0.0.1",
-          "inputAttr": {
-            "chartTitle":{"friendly":"Title", "type":"string", "default":""},
-            "gridlines":{"friendly":"Number of Gridlines", "type":"int", "default":"5"},
-            "legend":{"friendly":"Show Legend?", "type":"boolean", "default": true}
-          }
-        }
-
+      yAxisMinChanged: function(){
+        this._configureOptions();
+        this.$.googleChart.drawChart();
+      },
+      yAxisMaxChanged: function(){
+        this._configureOptions();
+        this.$.googleChart.drawChart();
       }
 
 
