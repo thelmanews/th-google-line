@@ -93,6 +93,14 @@ Element providing a Thelma wrapper for the Google Line Chart.
       showOptions: true,
       gridlines: 5,
       orientation: 'horizontal',
+      observe: {
+        legend: "updateOptions",
+        orientation: "updateOptions",
+        gridlines: "updateOptions",
+        chartTitle: "updateOptions",
+        yAxisMin: "updateOptions",
+        yAxisMax: "updateOptions"
+      },
       /*
       init: function() {
         this.inputChanged();
@@ -168,6 +176,10 @@ Element providing a Thelma wrapper for the Google Line Chart.
         self._data.unshift(firstRow);
 
        
+      },
+      updateOptions: function(){
+        this._configureOptions();
+        this.$.googleChart.drawChart();
       },
       /**
        * '_configureOptions' sets the appropriate options properties for the map, given the attribute values
@@ -262,30 +274,6 @@ Element providing a Thelma wrapper for the Google Line Chart.
           }
         }
 
-      },
-      legendChanged: function(){
-        this._configureOptions();
-        this.$.googleChart.drawChart();
-      },
-      orientationChanged: function(){
-        this._configureOptions();
-        this.$.googleChart.drawChart();
-      },
-      gridlinesChanged: function(){
-        this._configureOptions();
-        this.$.googleChart.drawChart();
-      },
-      chartTitleChanged: function(){
-        this._configureOptions();
-        this.$.googleChart.drawChart();
-      },
-      yAxisMinChanged: function(){
-        this._configureOptions();
-        this.$.googleChart.drawChart();
-      },
-      yAxisMaxChanged: function(){
-        this._configureOptions();
-        this.$.googleChart.drawChart();
       }
 
 
