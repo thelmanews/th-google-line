@@ -27,7 +27,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
     <th-u-data-selector id="data_selector" input="{{chartData}}" selections="{{labelValueSelection}}"  style="display: {{showOptions | displayFilter}};"></th-u-data-selector>
  
     <google-chart id="googleChart" style="width:100%; height: 85%;"
-          type='line'
+          type="line"
           options= "{{options}}"
           data="{{_data}}">
     </google-chart>
@@ -35,14 +35,23 @@ Element providing a Thelma wrapper for the Google Line Chart.
 
   <script>
 
-    Polymer('th-google-line', {
-
+    Polymer("th-google-line", {
 
       /**
-       * 'chartData' is the data represented by the graph. 
-       * @property chartData
+       * 'input' is the data to be represented by the graph.
+       * 
+       * @property input
        * @type Array
        * @default [{"Year":"2014", ...}]
+       */
+
+      /**
+       * 'chartData' is the data represented by the graph.
+       * This is for legacy compatability with Thelma, but otherwise
+       * serves the same function at 'input'.
+       * [@property] chartData
+       * [@type] Array
+       * [@default] [{"Year":"2014", ...}]
        */
       chartData: [
         {"Year": "2014", "Sales": 100, "Profit": 50},
@@ -74,21 +83,21 @@ Element providing a Thelma wrapper for the Google Line Chart.
       /**
        * 'color' determines the range of the fill color of the regions
        *
-       *  @property color
-       *  @type {String}
+       *  [@property] color
+       *  [@type] String
        */
       color: "",
       /**
        * 'legend' determines whether or not to display a legend
        * @property legend
-       * @type {Boolean}
+       * @type Boolean
        */
       legend: true,
       /**
        * 'numberFormat' refers to the number format of the legend min and max
        * 
        * @property numberFormat
-       * @type {String}
+       * @type String
        * @example: '.##'
        */
       numberFormat: "", 
@@ -102,7 +111,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
       ready : function() {
         //this._configureOptions();
         this.reformatData();
-        this.$.data_selector.addEventListener('th-data-selection-changed', function() {
+        this.$.data_selector.addEventListener("th-data-selection-changed", function() {
 
           this.labelValueSelection = this.$.data_selector.selections;
 
@@ -131,13 +140,13 @@ Element providing a Thelma wrapper for the Google Line Chart.
       },
 
       selectedLabelChanged: function() {
-          //if selectedLabel changed from outside, set the internal data_selector
+          // if selectedLabel changed from outside, set the internal data_selector
           this.$.data_selector.selections[0] = this.selectedLabel;
 
       },
 
       selectedValuesChanged: function() {
-          //if selectedValue changed from outside, set the internal data_selector
+          // if selectedValue changed from outside, set the internal data_selector
           this.$.data_selector.selections[1] = this.selectedValues;
 
       },
@@ -168,7 +177,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
 
         firstRow.unshift(self.labelValueSelection[0]);
         self._data.unshift(firstRow);
-        self.fire('th-output-ready')
+        self.fire("th-output-ready")
       },
       /**
        * '_configureOptions' sets the appropriate options properties, given the attribute values
@@ -181,7 +190,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
 
         self.minValue = self.minValue || 0;
 
-        var textColorSetting = { color: colors.theme.foreground2, fontName: colors.theme.font, fontSize: '0.8em', opacity: 0.7};
+        var textColorSetting = { color: colors.theme.foreground2, fontName: colors.theme.font, fontSize: "0.8em", opacity: 0.7};
 
         // Define chart options 
         self.options = {
@@ -196,9 +205,9 @@ Element providing a Thelma wrapper for the Google Line Chart.
             textStyle: { 
               // color: colors.theme.foreground1, 
               fontName: colors.theme.font, 
-              fontSize: '0.85em',
-              stroke: 'none',
-              strokeWidth: '0'            
+              fontSize: "0.85em",
+              stroke: "none",
+              strokeWidth: "0"            
             } 
           },
           vAxis: {
@@ -206,13 +215,13 @@ Element providing a Thelma wrapper for the Google Line Chart.
           }
         };
 
-        if (!self.legend) { self.options.legend = 'none';}
+        if (!self.legend) { self.options.legend = "none";console.log("no legend");}
       },
       /**
        * 'getColors' gets the color theme from the global scope
        *
-       *  @method getColors
-       *  @return Object
+       *  [@method] getColors
+       *  [@return] Object
        */
       getColors: function(){
         colors = {};
@@ -234,7 +243,6 @@ Element providing a Thelma wrapper for the Google Line Chart.
       displayFilter: function(value){
         return value ? "inline-block" : "none";
       }
-
 
     });
 
