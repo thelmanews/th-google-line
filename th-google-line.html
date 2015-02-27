@@ -18,7 +18,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
 @homepage http://nishacodes.github.io/th-google-regions
 -->
 
-<polymer-element name="th-google-line"  extends="th-d3-chart" attributes="input chartData selectedLabel selectedValues color backgroundColor legend showOptions labelValueSelection chartTitle gridlines orientation yAxisMin yAxisMax">
+<polymer-element name="th-google-line"  extends="th-d3-chart" attributes="input chartData selectedLabel selectedValues backgroundColor legend showOptions labelValueSelection chartTitle gridlines orientation yAxisMin yAxisMax textColor fontSize hAxisTitle vAxisTitle">
   <template> 
     <core-style ref="theme"></core-style>
     <link rel="stylesheet" href="th-google-line.css">
@@ -69,16 +69,6 @@ Element providing a Thelma wrapper for the Google Line Chart.
        */
       chartHeight: 400,
       /**
-       * 'backgroundColor' refers to the background color of the container
-       * @type {String}
-       */
-      backgroundColor: "",
-      /**
-       * 'color' determines the range of the fill color of the regions
-       * @type {String}
-       */
-      color: "",
-      /**
        * 'legend' determines whether or not to display a legend
        * @type {Boolean}
        */
@@ -95,6 +85,11 @@ Element providing a Thelma wrapper for the Google Line Chart.
       orientation: 'horizontal',
       observe: {
         legend: "updateOptions",
+        fontSize: "updateOptions",
+        backgroundColor: "updateOptions",
+        textColor: "updateOptions",
+        vAxisTitle: "updateOptions",
+        hAxisTitle: "updateOptions",
         orientation: "updateOptions",
         gridlines: "updateOptions",
         chartTitle: "updateOptions",
@@ -109,6 +104,13 @@ Element providing a Thelma wrapper for the Google Line Chart.
       ready : function() {
         //this._configureOptions();
         this.reformatData();
+
+         // Listen for theme changes
+        document.addEventListener('th-theme-changed', function(e) {
+          this.getColors();
+          this.updateOptions();
+        }.bind(this));
+
         this.$.data_selector.addEventListener('th-data-selection-changed', function() {
 
           this.labelValueSelection = this.$.data_selector.selections;
@@ -187,44 +189,55 @@ Element providing a Thelma wrapper for the Google Line Chart.
       _configureOptions: function(){
         var self = this,
             colors =  self.getColors();
-        // Determine intermediate variables
-        //self.color = self.color || [colors.accents[0], colors.accents[1]];
+        
+        var fgColor = self.textColor || colors.theme.foreground1 || "black";
+        var bgColor = self.backgroundColor || colors.theme.background || "none";
 
         self.minValue = self.minValue || 0;
-
-        var textColorSetting = { color: colors.theme.foreground2, fontName: colors.theme.font, fontSize: '0.8em', opacity: 0.7};
 
         // Define chart options 
         self.options = {
           title: self.chartTitle,
+          titleTextStyle: { color: fgColor, fontName: colors.theme.font, fontSize: self.fontSize*1.5},
+          fontSize: self.fontSize,
           orientation: self.orientation,
           colors: colors.accents,
-          backgroundColor: self.backgroundColor || "none",
+          backgroundColor: bgColor,
           animation: {duration: "500"},
           legend: { 
             position: "bottom",
             alignment: "center",
             numberFormat: self.numberFormat,
             textStyle: { 
-              // color: colors.theme.foreground1, 
+              color: fgColor, 
               fontName: colors.theme.font, 
               fontSize: '0.85em',
               stroke: 'none',
-              strokeWidth: '0'            
+              strokeWidth: '0'           
             } 
           },
           vAxis: {
+            title: self.vAxisTitle,
+            titleTextStyle: { color: fgColor, fontName: colors.theme.font, fontSize: self.fontSize*1.25},
+            baselineColor: fgColor,
             format: "#,###.##",  //TODO: add more options here and figure out how to format numbers in tooltips
             gridlines: {
-              count: self.gridlines
+              count: self.gridlines,
+              color: fgColor
             },
+            textStyle:{ color: fgColor, fontName: colors.theme.font, fontSize: '0.85em'},
             minValue: self.orientation === "horizontal" ? self.yAxisMin : "automatic",
             maxValue: self.orientation === "horizontal" ? self.yAxisMax : "automatic",
           },
           hAxis: {
+            title: self.hAxisTitle,
+            titleTextStyle: { color: fgColor, fontName: colors.theme.font, fontSize: self.fontSize*1.25},
+            baselineColor: fgColor,
+            textStyle:{ color: fgColor, fontName: colors.theme.font, fontSize: '0.85em'},
             format: "#,###.##",  //TODO: add more options here and figure out how to format numbers in tooltips
             gridlines: {
-              count: self.gridlines
+              count: self.gridlines,
+              color: fgColor
             },
             minValue: self.orientation === "vertical" ? self.yAxisMin : "automatic",
             maxValue: self.orientation === "vertical" ? self.yAxisMax : "automatic",
@@ -266,7 +279,12 @@ Element providing a Thelma wrapper for the Google Line Chart.
           "version": "0.0.1",
           "inputAttr": {
             "chartTitle":{"friendly":"Title", "type":"string", "default":""},
+            "vAxisTitle":{"friendly":"Vertical Axis Title", "type":"string", "default":""},
+            "hAxisTitle":{"friendly":"Horizontal Axis Title", "type":"string", "default":""},
             "orientation": {"friendly":"Orientation", "type": "dropdown", "default": "horizontal", "values":["horizontal", "vertical"]},
+            "fontSize":{"friendly":"Font Size", "type":"int", "default":""},
+            "textColor":{"friendly":"Text Color", "type":"string", "default":""},
+            "backgroundColor":{"friendly":"Background Color", "type":"string", "default":""},
             "gridlines":{"friendly":"Number of Gridlines", "type":"int", "default":"5"},
             "yAxisMin":{"friendly":"Y Axis Min", "type":"int", "default":""},
             "yAxisMax":{"friendly":"Y Axis Max", "type":"int", "default":""},
