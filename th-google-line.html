@@ -24,9 +24,9 @@ Element providing a Thelma wrapper for the Google Line Chart.
     <link rel="stylesheet" href="th-google-line.css">
     <th-data-utility id="utility"></th-data-utility>
 
-    <th-u-data-selector id="data_selector" input="{{chartData}}" selections="{{labelValueSelection}}"  style="display: {{showOptions | displayFilter}};"></th-u-data-selector>
+    <th-u-data-selector id="data_selector" input="{{chartData}}" selections="{{labelValueSelection}}"  style="display: {{showOptions | displayFilter}}; height: 10%;"></th-u-data-selector>
  
-    <google-chart id="googleChart" style="width:100%; height: 85%;"
+    <google-chart id="googleChart" style="width:100%; height: {{showOptions | heightFilter}};"
           type='line'
           options= "{{options}}"
           data="{{_data}}">
@@ -270,6 +270,9 @@ Element providing a Thelma wrapper for the Google Line Chart.
       },
       displayFilter: function(value){
         return value ? "inline-block" : "none";
+      },
+      heightFilter: function(value){
+        return value ? "90%" : "100%";
       },
       getMetaData: function(){
         return {
