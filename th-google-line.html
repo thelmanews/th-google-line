@@ -17,7 +17,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
 @homepage http://nishacodes.github.io/th-google-regions
 -->
 
-<polymer-element name="th-google-line"  extends="th-d3-chart" attributes="input chartData selectedLabel selectedValues color backgroundColor legend labelName series1Name series2Name series3Name gridlines orientation yAxisMin yAxisMax textColor fontSize hAxisTitle vAxisTitle chartTitle">
+<polymer-element name="th-google-line"  extends="th-d3-chart" attributes="input chartData selectedLabel selectedValues color backgroundColor legend labelName series1Name series2Name series3Name gridlines orientation yAxisMin yAxisMax textColor fontSize hAxisTitle vAxisTitle chartTitle gridlinesColor">
   <template> 
     <core-style ref="theme"></core-style>
     <link rel="stylesheet" href="th-google-line.css">
@@ -84,6 +84,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
         legend: "updateOptions",
         fontSize: "updateOptions",
         backgroundColor: "updateOptions",
+        gridlinesColor: "updateOptions",
         textColor: "updateOptions",
         vAxisTitle: "updateOptions",
         hAxisTitle: "updateOptions",
@@ -272,7 +273,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
             format: "#,###.##",  //TODO: add more options here and figure out how to format numbers in tooltips
             gridlines: {
               count: self.gridlines,
-              color: fgColor
+              color: self.gridlinesColor || fgColor
             },
             minValue: self.orientation === "vertical" ? self.yAxisMin : "automatic",
             maxValue: self.orientation === "vertical" ? self.yAxisMax : "automatic"
@@ -284,7 +285,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
             format: "#,###.##",  //TODO: add more options here and figure out how to format numbers in tooltips
             gridlines: {
               count: self.gridlines,
-              color: fgColor
+              color: self.gridlinesColor || fgColor
             },
             textStyle:{ color: fgColor, fontName: colors.theme.font, fontSize: '0.85em'},
             minValue: self.orientation === "horizontal" ? self.yAxisMin : "automatic",
