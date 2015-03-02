@@ -18,7 +18,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
 @homepage http://nishacodes.github.io/th-google-regions
 -->
 
-<polymer-element name="th-google-line"  extends="th-d3-chart" attributes="input chartData selectedLabel selectedValues backgroundColor legend showOptions labelValueSelection chartTitle gridlines orientation yAxisMin yAxisMax textColor fontSize hAxisTitle vAxisTitle">
+<polymer-element name="th-google-line"  extends="th-d3-chart" attributes="input chartData selectedLabel selectedValues backgroundColor legend showOptions labelValueSelection chartTitle gridlines orientation yAxisMin yAxisMax textColor fontSize hAxisTitle vAxisTitle gridlinesColor">
   <template> 
     <core-style ref="theme"></core-style>
     <link rel="stylesheet" href="th-google-line.css">
@@ -92,6 +92,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
         hAxisTitle: "updateOptions",
         orientation: "updateOptions",
         gridlines: "updateOptions",
+        gridlinesColor: "updateOptions",
         chartTitle: "updateOptions",
         yAxisMin: "updateOptions",
         yAxisMax: "updateOptions"
@@ -223,7 +224,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
             format: "#,###.##",  //TODO: add more options here and figure out how to format numbers in tooltips
             gridlines: {
               count: self.gridlines,
-              color: fgColor
+              color: self.gridlinesColor || fgColor
             },
             textStyle:{ color: fgColor, fontName: colors.theme.font, fontSize: '0.85em'},
             minValue: self.orientation === "horizontal" ? self.yAxisMin : "automatic",
@@ -237,7 +238,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
             format: "#,###.##",  //TODO: add more options here and figure out how to format numbers in tooltips
             gridlines: {
               count: self.gridlines,
-              color: fgColor
+              color: self.gridlinesColor || fgColor
             },
             minValue: self.orientation === "vertical" ? self.yAxisMin : "automatic",
             maxValue: self.orientation === "vertical" ? self.yAxisMax : "automatic",
@@ -286,8 +287,9 @@ Element providing a Thelma wrapper for the Google Line Chart.
             "hAxisTitle":{"friendly":"Horizontal Axis Title", "type":"string", "default":""},
             "orientation": {"friendly":"Orientation", "type": "dropdown", "default": "horizontal", "values":["horizontal", "vertical"]},
             "fontSize":{"friendly":"Font Size", "type":"int", "default":""},
-            "textColor":{"friendly":"Text Color", "type":"string", "default":""},
-            "backgroundColor":{"friendly":"Background Color", "type":"string", "default":""},
+            "textColor":{"friendly":"Text Color", "type":"color", "default":""},
+            "backgroundColor":{"friendly":"Background Color", "type":"color", "default":""},
+            "gridlinesColor":{"friendly":"Gridlines Color", "type":"color", "default":""},
             "gridlines":{"friendly":"Number of Gridlines", "type":"int", "default":"5"},
             "yAxisMin":{"friendly":"Y Axis Min", "type":"int", "default":""},
             "yAxisMax":{"friendly":"Y Axis Max", "type":"int", "default":""},
