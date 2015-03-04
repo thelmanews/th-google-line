@@ -178,7 +178,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
         firstRow.unshift(self.labelValueSelection[0]);
         self._data.unshift(firstRow);
 
-       
+       self.fire('th-output-changed')
       },
       updateOptions: function(){
         this._configureOptions();

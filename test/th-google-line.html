@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>th-google-line</title>
+
+  <script src="../../webcomponentsjs/webcomponents.js"></script>
+  <script src="../../web-component-tester/browser.js"></script>
+
+  <!-- Step 1: import the element to test -->
+  <link rel="import" href="../th-google-line.html">
+
+</head>
+<body>
+
+  <th-google-line id="fixture"></th-google-line>
+
+  <script>
+    var should = chai.should();
+    var myEl = document.getElementById("fixture");
+
+    // the event listener callback will be added / removed in every async test
+    var callback = function() {};
+
+    suite("<th-google-line>", function() {
+
+      test("component can be created as an object", function(done) {
+        should.exist(myEl);
+        done();
+      });
+
+      test("accepts input, fires output-changed", function(done) {
+        var input = [
+          {"Year": "2014", "Sales": 100, "Profit": 50},
+          {"Year": "2015", "Sales": 50, "Profit": 40},
+          {"Year": "2016", "Sales": 300, "Profit": 200},
+          {"Year": 2019, "Sales": 3000, "Profit": 2000}
+        ],
+        callback = function(e) {
+          myEl.chartData.should.equal(input);
+          done();
+        };
+        myEl.addEventListener("th-output-changed", callback);
+
+        // change input
+        myEl.input = input;
+
+        // check th-output-changed event
+        flush(function() {
+        });
+      });
+
+    });
+
+  </script>
+
+</body>
+</html>
