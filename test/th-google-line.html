@@ -30,7 +30,7 @@
         done();
       });
 
-      test("accepts input, fires output-ready", function(done) {
+      test("accepts input, fires output-changed", function(done) {
         var input = [
           {"Year": "2014", "Sales": 100, "Profit": 50},
           {"Year": "2015", "Sales": 50, "Profit": 40},
@@ -41,12 +41,12 @@
           myEl.chartData.should.equal(input);
           done();
         };
-        myEl.addEventListener("th-output-ready", callback);
+        myEl.addEventListener("th-output-changed", callback);
 
         // change input
         myEl.input = input;
 
-        // check th-output-ready event
+        // check th-output-changed event
         flush(function() {
         });
       });

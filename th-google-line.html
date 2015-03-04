@@ -1,8 +1,12 @@
-<link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../th-d3-chart/th-d3-chart.html">
-<link rel="import" href="../google-chart/google-chart.html">
-<link rel="import" href="../th-data-utility/th-data-utility.html">
-<link rel="import" href="../th-u-data-selector/th-u-data-selector.html">
+<!doctype html>
+<html>
+  <head>
+    <link rel="import" href="../polymer/polymer.html">
+    <link rel="import" href="../th-d3-chart/th-d3-chart.html">
+    <link rel="import" href="../google-chart/google-chart.html">
+    <link rel="import" href="../th-data-utility/th-data-utility.html">
+    <link rel="import" href="../th-u-data-selector/th-u-data-selector.html">
+  </head>
 
 <!--
 Element providing a Thelma wrapper for the Google Line Chart.
@@ -187,7 +191,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
 
         firstRow.unshift(self.labelValueSelection[0]);
         self._data.unshift(firstRow);
-        self.fire("th-output-ready")
+        self.fire("th-output-changed")
       },
       updateOptions: function(){
         this._configureOptions();
@@ -295,3 +299,4 @@ Element providing a Thelma wrapper for the Google Line Chart.
   </script>
 
 </polymer-element>
+</html>
