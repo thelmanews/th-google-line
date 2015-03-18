@@ -17,7 +17,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
 @homepage http://nishacodes.github.io/th-google-regions
 -->
 
-<polymer-element name="th-google-line"  extends="th-d3-chart" attributes="input chartData selectedLabel selectedValues color backgroundColor legend labelName series1Name series2Name series3Name gridlines orientation yAxisMin yAxisMax textColor fontSize hAxisTitle vAxisTitle chartTitle gridlinesColor">
+<polymer-element name="th-google-line"  extends="th-d3-chart" attributes="input chartData selectedLabel selectedValues color backgroundColor legend labelName series1Name series2Name series3Name gridlines orientation yAxisMin yAxisMax textColor fontSize hAxisTitle vAxisTitle chartTitle gridlinesColor numberPattern chartAreaWidth chartAreaHeight">
   <template> 
     <core-style ref="theme"></core-style>
     <link rel="stylesheet" href="th-google-line.css">
@@ -28,7 +28,8 @@ Element providing a Thelma wrapper for the Google Line Chart.
     <google-chart id="googleChart" style="width:100%; height: 100%;"
           type='line'
           options= "{{options}}"
-          data="{{_data}}">
+          data="{{_data}}"
+          numberFormats="{{numberFormats}}">
     </google-chart>
   </template>
 
@@ -46,15 +47,15 @@ Element providing a Thelma wrapper for the Google Line Chart.
       //   {"label": "2016", "series1": 300, "series2": 200}
       // ],
       /**
-       * 'chartWidth' refers to the width of the element container
+       * 'chartAreaWidth' refers to the width of the chartarea svg
        * @type {Number}
        */
-      chartWidth: 280,
+      chartAreaWidth: '80%',
       /**
-       * 'chartHeight' refers to the height of the element container
+       * 'chartAreaHeight' refers to the height of the chartarea container
        * @type {Number}
        */
-      chartHeight: 400,
+      chartAreaHeight: '80%',
       /**
        * 'backgroundColor' refers to the background color of the container
        * @type {String}
@@ -71,12 +72,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
        */
       legend: true,
       gridlines: 5, 
-      /**
-       * 'numberFormat' refers to the number format of the legend min and max
-       * @type {String}
-       * @example: '.##'
-       */
-      numberFormat: "", 
+      numberPattern: "",
       thelma: true,
       labelValueSelection: null,
       orientation: 'horizontal',
@@ -92,7 +88,11 @@ Element providing a Thelma wrapper for the Google Line Chart.
         gridlines: "updateOptions",
         chartTitle: "updateOptions",
         yAxisMin: "updateOptions",
-        yAxisMax: "updateOptions"
+        yAxisMax: "updateOptions",
+        numberPattern:  "updateData",
+        series1Name: "reformatDataThelma",
+        series2Name: "reformatDataThelma",
+        series3Name: "reformatDataThelma"
       },
       ready : function() {
         this._configureOptions();
@@ -160,7 +160,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
        */
       reformatDataThelma: function(){
         var self = this; 
-
+        self.numberFormats= [];
         self.labelValueSelection = [self.labelName, []];
         var seriesNames = [self.series1Name, self.series2Name, self.series3Name];
         if (self.series1Name && self.series1Name.length > 0  && self.chartData[0].series1){
@@ -179,18 +179,42 @@ Element providing a Thelma wrapper for the Google Line Chart.
         var firstRow = self.labelValueSelection[1].map(function(item){ return item;}) ;
         firstRow.unshift(self.labelValueSelection[0]);
 
-        self._data = self.chartData.map(function(item){
+        self._data = self.chartData.map(function(item, index){
           var row = [];
           row.push(item.label);
           if (series1){
+            if (index === 0){
+              // Extract the number format of the first row of data and apply to tooltips
+              var format = self.$.utility.extractNumberFormat(item.series1);
+              if (format){
+                self._numberPattern = format.pattern; // Use this pattern to apply to axis numbers 
+                self.numberFormats.push({col: 1, prefix: format.prefix, suffix: format.suffix, groupingSymbol:',', fractionDigits: format.decimalPlaces});
+              }
+            }
             var series1val = item.series1 || item.series1 === 0 ? self.$.utility.unformatString(item.series1) : null;
             row.push(series1val);
           }
           if (series2){
+            if (index === 0){
+              // Extract the number format of the first row of data and apply to tooltips
+              var format = self.$.utility.extractNumberFormat(item.series2);
+              if (format){
+                self._numberPattern = format.pattern; // Use this pattern to apply to axis numbers 
+                self.numberFormats.push({col: 2, prefix: format.prefix, suffix: format.suffix, groupingSymbol:',', fractionDigits: format.decimalPlaces});
+              }
+            }
             var series2val = item.series2 || item.series2 === 0 ? self.$.utility.unformatString(item.series2) : null;
             row.push(series2val);
           }
           if (series3){
+            if (index === 0){
+              // Extract the number format of the first row of data and apply to tooltips
+              var format = self.$.utility.extractNumberFormat(item.series3);
+              if (format){
+                self._numberPattern = format.pattern; // Use this pattern to apply to axis numbers 
+                self.numberFormats.push({col: 3, prefix: format.prefix, suffix: format.suffix, groupingSymbol:',', fractionDigits: format.decimalPlaces});
+              }
+            }
             var series3val = item.series3 || item.series3 === 0 ? self.$.utility.unformatString(item.series3) : null;
            row.push(series3val); 
           }
@@ -198,6 +222,16 @@ Element providing a Thelma wrapper for the Google Line Chart.
           return row;
         });
         self._data.unshift(firstRow);       
+
+        if (self.numberPattern){
+          self.numberFormats = [];
+          firstRow.forEach(function(item, index){
+            self.numberFormats.push({col: index, pattern: self.numberPattern});
+          })  
+        }
+      },
+      updateData: function() {
+        this.reformatData();
       },
       updateOptions: function(){
         this._configureOptions();
@@ -239,7 +273,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
             colors =  self.getColors();
         
         var fgColor = self.textColor || colors.theme.foreground1 || "black";
-        var bgColor = self.backgroundColor || colors.theme.background || "none";
+        var bgColor = self.backgroundColor ||  "none";
 
         self.minValue = self.minValue || 0;
 
@@ -250,6 +284,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
           fontSize: self.fontSize,
           orientation: self.orientation,
           colors: colors.accents,
+          chartArea:{left:'auto',top:'auto', width: self.chartAreaWidth, height:self.chartAreaHeight},
           backgroundColor: bgColor,
           animation: {duration: "500"},
           legend: { 
@@ -270,7 +305,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
             titleTextStyle: { color: fgColor, fontName: colors.theme.font, fontSize: self.fontSize*1.25},
             baselineColor: fgColor,
             textStyle:{ color: fgColor, fontName: colors.theme.font, fontSize: '0.85em'},
-            format: "#,###.##",  //TODO: add more options here and figure out how to format numbers in tooltips
+            format: self.numberPattern || self._numberPattern || "#,###.##", // numberPattern is exposed as an attribute and _numberPattern is the pattern extracted from data
             gridlines: {
               count: self.gridlines,
               color: self.gridlinesColor || fgColor
@@ -282,7 +317,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
             title: self.vAxisTitle,
             titleTextStyle: { color: fgColor, fontName: colors.theme.font, fontSize: self.fontSize*1.25},
             baselineColor: fgColor,
-            format: "#,###.##",  //TODO: add more options here and figure out how to format numbers in tooltips
+            format: self.numberPattern || self._numberPattern || "#,###.##", // numberPattern is exposed as an attribute and _numberPattern is the pattern extracted from data
             gridlines: {
               count: self.gridlines,
               color: self.gridlinesColor || fgColor
