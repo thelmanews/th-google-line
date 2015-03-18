@@ -1,14 +1,15 @@
 {
-  "name": "th-google-regions",
+  "name": "th-google-line",
   "version": "0.0.0",
   "keywords": [
     "seed",
     "polymer",
     "web-components"
   ],
-  "main": "th-google-regions.html",
+  "main": "th-google-line.html",
   "dependencies": {
-    "polymer": "Polymer/polymer#~0.3.5",
+    "polymer": "Polymer/polymer#~0.5.1",
+    "th-d3-chart": "thelmanews/th-d3-chart",
     "google-chart": "lenses/google-chart#master",
     "th-u-data-selector": "thelmanews/th-u-data-selector",
     "th-data-utility": "thelmanews/th-data-utility"
