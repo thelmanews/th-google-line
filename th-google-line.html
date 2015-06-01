@@ -17,7 +17,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
 @homepage http://nishacodes.github.io/th-google-regions
 -->
 
-<polymer-element name="th-google-line"  extends="th-d3-chart" attributes="input chartData selectedLabel selectedValues color backgroundColor legend labelName series1Name series2Name series3Name gridlines orientation yAxisMin yAxisMax textColor fontSize hAxisTitle vAxisTitle chartTitle gridlinesColor numberPattern chartAreaWidth chartAreaHeight">
+<polymer-element name="th-google-line"  extends="th-d3-chart" attributes="input chartData selectedLabel selectedValues color backgroundColor legend labelName series1Name series2Name series3Name gridlines orientation yAxisMin yAxisMax textColor fontSize hAxisTitle vAxisTitle chartTitle gridlinesColor numberPattern chartAreaWidth chartAreaHeight lineColors">
   <template> 
     <core-style ref="theme"></core-style>
     <link rel="stylesheet" href="th-google-line.css">
@@ -62,10 +62,17 @@ Element providing a Thelma wrapper for the Google Line Chart.
        */
       backgroundColor: "",
       /**
-       * 'color' determines the range of the fill color of the regions
-       * @type {String}
+       * 'lineColors' is an array of colors which correspondent to the line with the same index.
+       *  Array of objects is used for ease of exposing attribute in Thelma Composer.
+       *
+       *  lineColors: [ 
+       *                {'color': '#eee'}, // applies to first line
+       *                {'color': '#ddd'}  // applies to second line
+       *              ]
+       * 
+       * @type {Array}
        */
-      color: "",
+      lineColors: [],
       /**
        * 'legend' determines whether or not to display a legend
        * @type {Boolean}
@@ -274,8 +281,19 @@ Element providing a Thelma wrapper for the Google Line Chart.
         
         var fgColor = self.textColor || colors.theme.foreground1 || "black";
         var bgColor = self.backgroundColor ||  "none";
+        var lineColors;
 
         self.minValue = self.minValue || 0;
+
+        // Create array of colors, where each color applies to that series index
+        if (self.lineColors && self.lineColors.length){
+          lineColors = self.lineColors.map(function(colorObj, i){ 
+            // Sometimes composer returns null instead of object and sometimes "" for color property
+            return colorObj && colorObj.color ? colorObj.color : colors.accents[i];
+          });
+        } else {
+          lineColors = colors.accents;
+        }
 
         // Define chart options 
         self.options = {
@@ -283,7 +301,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
           titleTextStyle: { color: fgColor, fontName: colors.theme.font, fontSize: self.fontSize*1.5},
           fontSize: self.fontSize,
           orientation: self.orientation,
-          colors: colors.accents,
+          colors: lineColors,
           chartArea:{left:'auto',top:'auto', width: self.chartAreaWidth, height:self.chartAreaHeight},
           backgroundColor: bgColor,
           animation: {duration: "500"},
