@@ -1,8 +1,6 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../th-d3-chart/th-d3-chart.html">
 <link rel="import" href="../google-chart/google-chart.html">
-<link rel="import" href="../th-data-utility/th-data-utility.html">
-<link rel="import" href="../th-u-data-selector/th-u-data-selector.html">
 
 <!--
 Element providing a Thelma wrapper for the Google Line Chart.
@@ -21,9 +19,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
   <template> 
     <core-style ref="theme"></core-style>
     <link rel="stylesheet" href="th-google-line.css">
-    <th-data-utility id="utility"></th-data-utility>
 
-    <th-u-data-selector id="data_selector" input="{{chartData}}" selections="{{labelValueSelection}}"></th-u-data-selector>
  
     <google-chart id="googleChart" style="width:100%; height: 85%;"
           type='line'
@@ -47,16 +43,17 @@ Element providing a Thelma wrapper for the Google Line Chart.
        * @type {Number}
        */
       chartData: [
-        {"Year": "2014", "Sales": 100, "Profit": 50},
-        {"Year": "2015", "Sales": 50, "Profit": 40},
-        {"Year": "2016", "Sales": 300, "Profit": 200}
+        {"label": "2005", "value": [80.66, 53.42, 37]},
+        {"label": "2006", "value": [79.84, 73.42, 56]},
+        {"label": "2007", "value": [78.6, 75.42, 42]},
+        {"label": "2008", "value": [78.09, 71.42, 81]},
+        {"label": "2009", "value": [72.49, 71.42, 92]}  
       ],
-
       /**
        * Data label for X axis
        * @type {String}
        */
-      // dataLabels: ["Life Expectancy","Fertility Rate","Growth"],
+      dataLabels: ["Life Expectancy","Fertility Rate","Growth"],
       /**
        * 'chartWidth' refers to the width of the element container
        * @type {Number}
@@ -98,6 +95,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
         //this._configureOptions();
         console.log('init');
         this.reformatData();
+      /*
         this.$.data_selector.addEventListener('th-data-selection-changed', function() {
 
           this.labelValueSelection = this.$.data_selector.selections;
@@ -108,7 +106,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
           this.reformatData();
 
         }.bind(this));
-        
+        */
       },
 
       inputChanged: function () {
@@ -143,6 +141,13 @@ Element providing a Thelma wrapper for the Google Line Chart.
        * 'reformatData' converts chartData into the correct data structure for the map
        */
       reformatData: function(){
+        var self = this;        
+        self._data = self.chartData.map(function(item){
+          return [item.label].concat(item.value);
+        });
+        console.log(self._data)
+        self._data.unshift(["Label"].concat( self.dataLabels));
+        /*
         var self = this; 
 
         console.log("reformat data", self.labelValueSelection);
@@ -166,7 +171,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
 
         firstRow.unshift(self.labelValueSelection[0]);
         self._data.unshift(firstRow);
-
+*/
        
       },
       /**
