@@ -9,7 +9,6 @@
   "main": "th-google-regions.html",
   "dependencies": {
     "polymer": "Polymer/polymer#~0.3.5",
-    "google-chart": "GoogleWebComponents/google-chart#master",
-    "th-u-data-selector": "thelmanews/th-u-data-selector"
+    "google-chart": "GoogleWebComponents/google-chart#0.2.1"
   }
 }
