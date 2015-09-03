@@ -206,7 +206,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
                 self.numberFormats.push({col: 1, prefix: format.prefix, suffix: format.suffix, groupingSymbol:',', fractionDigits: format.decimalPlaces});
               }
             }
-            var series1val = item.series1 || item.series1 === 0 ? parseFloat(item.series1) /*self.$.utility.unformatString(item.series1)*/ : null;
+            var series1val = item.series1 || item.series1 === 0 ? parseFloat(item.series1.replace(/[^0-9.-]+/g, '')) /*self.$.utility.unformatString(item.series1)*/ : null;
             row.push(series1val);
           }
           if (series2){
@@ -218,7 +218,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
                 self.numberFormats.push({col: 2, prefix: format.prefix, suffix: format.suffix, groupingSymbol:',', fractionDigits: format.decimalPlaces});
               }
             }
-            var series2val = item.series2 || item.series2 === 0 ? parseFloat(item.series2) /*self.$.utility.unformatString(item.series2)*/ : null;
+            var series2val = item.series2 || item.series2 === 0 ? parseFloat(item.series2.replace(/[^0-9.-]+/g, '')) /*self.$.utility.unformatString(item.series2)*/ : null;
             row.push(series2val);
           }
           if (series3){
@@ -230,7 +230,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
                 self.numberFormats.push({col: 3, prefix: format.prefix, suffix: format.suffix, groupingSymbol:',', fractionDigits: format.decimalPlaces});
               }
             }
-            var series3val = item.series3 || item.series3 === 0 ? parseFloat(item.series3)/*self.$.utility.unformatString(item.series3)*/ : null;
+            var series3val = item.series3 || item.series3 === 0 ? parseFloat(item.series3.replace(/[^0-9.-]+/g, ''))/*self.$.utility.unformatString(item.series3)*/ : null;
            row.push(series3val); 
           }
 
