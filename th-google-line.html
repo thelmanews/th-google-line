@@ -1,9 +1,10 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../th-d3-chart/th-d3-chart.html">
 <link rel="import" href="../google-chart/google-chart.html">
+<!--
 <link rel="import" href="../th-data-utility/th-data-utility.html">
 <link rel="import" href="../th-u-data-selector/th-u-data-selector.html">
-
+-->
 <!--
 Element providing a Thelma wrapper for the Google Line Chart.
 
@@ -21,9 +22,13 @@ Element providing a Thelma wrapper for the Google Line Chart.
   <template> 
     <core-style ref="theme"></core-style>
     <link rel="stylesheet" href="th-google-line.css">
+    <!--
     <th-data-utility id="utility"></th-data-utility>
+      -->  
     <template if="{{!thelma}}">
+    <!--
     <th-u-data-selector id="data_selector" input="{{chartData}}" selections="{{labelValueSelection}}"></th-u-data-selector>
+    -->  
     </template> 
     <google-chart id="googleChart" style="width:100%; height: 100%;"
           type='line'
@@ -107,7 +112,8 @@ Element providing a Thelma wrapper for the Google Line Chart.
         if (this.thelma){
           this.reformatDataThelma();
         } else {
-          this.reformatData();  
+        this.reformatData(); 
+        /*
           this.$.data_selector.addEventListener('th-data-selection-changed', function() {
 
             this.labelValueSelection = this.$.data_selector.selections;
@@ -123,6 +129,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
             
 
           }.bind(this));
+        */
         }
       },
 
@@ -165,7 +172,79 @@ Element providing a Thelma wrapper for the Google Line Chart.
       /**
        * 'reformatDataThelma' converts chartData into the correct data structure using Thelma-composer specific attrs
        */
-      reformatDataThelma: function(){
+       reformatDataThelma: function(){
+
+        var self = this; 
+        self.numberFormats= [];
+        self.labelValueSelection = [self.labelName, []];
+        var seriesNames = [self.series1Name, self.series2Name, self.series3Name];
+        if (self.series1Name && self.series1Name.length > 0  && self.chartData[0].series1){
+          var series1 = true;
+          self.labelValueSelection[1].push(self.series1Name);
+        }
+        if (self.series2Name && self.series2Name.length > 0  && self.chartData[0].series2){
+          var series2 = true;
+          self.labelValueSelection[1].push(self.series2Name);
+        }
+        if (self.series3Name && self.series3Name.length > 0  && self.chartData[0].series3){
+          var series3 = true;
+          self.labelValueSelection[1].push(self.series3Name);
+        }
+
+        var firstRow = self.labelValueSelection[1].map(function(item){ return item;}) ;
+        firstRow.unshift(self.labelValueSelection[0]);
+
+        self._data = self.chartData.map(function(item, index){
+          var row = [];
+          row.push(item.label);
+          if (series1){
+            if (index === 0){
+              // Extract the number format of the first row of data and apply to tooltips
+              var format = null;//self.$.utility.extractNumberFormat(item.series1);
+              if (format){
+                self._numberPattern = format.pattern; // Use this pattern to apply to axis numbers 
+                self.numberFormats.push({col: 1, prefix: format.prefix, suffix: format.suffix, groupingSymbol:',', fractionDigits: format.decimalPlaces});
+              }
+            }
+            var series1val = item.series1 || item.series1 === 0 ? parseFloat(item.series1.replace(/[^0-9.-]+/g, '')) /*self.$.utility.unformatString(item.series1)*/ : null;
+            row.push(series1val);
+          }
+          if (series2){
+            if (index === 0){
+              // Extract the number format of the first row of data and apply to tooltips
+              var format = null; //self.$.utility.extractNumberFormat(item.series2);
+              if (format){
+                self._numberPattern = format.pattern; // Use this pattern to apply to axis numbers 
+                self.numberFormats.push({col: 2, prefix: format.prefix, suffix: format.suffix, groupingSymbol:',', fractionDigits: format.decimalPlaces});
+              }
+            }
+            var series2val = item.series2 || item.series2 === 0 ? parseFloat(item.series2.replace(/[^0-9.-]+/g, '')) /*self.$.utility.unformatString(item.series2)*/ : null;
+            row.push(series2val);
+          }
+          if (series3){
+            if (index === 0){
+              // Extract the number format of the first row of data and apply to tooltips
+              var format = null;//self.$.utility.extractNumberFormat(item.series3);
+              if (format){
+                self._numberPattern = format.pattern; // Use this pattern to apply to axis numbers 
+                self.numberFormats.push({col: 3, prefix: format.prefix, suffix: format.suffix, groupingSymbol:',', fractionDigits: format.decimalPlaces});
+              }
+            }
+            var series3val = item.series3 || item.series3 === 0 ? parseFloat(item.series3.replace(/[^0-9.-]+/g, ''))/*self.$.utility.unformatString(item.series3)*/ : null;
+           row.push(series3val); 
+          }
+
+          return row;
+        });
+        self._data.unshift(firstRow);       
+
+        if (self.numberPattern){
+          self.numberFormats = [];
+          firstRow.forEach(function(item, index){
+            self.numberFormats.push({col: index, pattern: self.numberPattern});
+          })  
+        }
+         /*
         var self = this; 
         self.numberFormats= [];
         self.labelValueSelection = [self.labelName, []];
@@ -236,6 +315,7 @@ Element providing a Thelma wrapper for the Google Line Chart.
             self.numberFormats.push({col: index, pattern: self.numberPattern});
           })  
         }
+        */
       },
       updateData: function() {
         this.reformatData();
